@@ -4,6 +4,10 @@ import styles from "./App.module.css";
 function App() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [refreshProductsFlag, setRefreshProductsFlag] = useState(false);
+
+  const refreshProducts = () => setRefreshProductsFlag(!refreshProductsFlag);
 
   useEffect(() => {
     setIsLoading(true);
@@ -14,7 +18,26 @@ function App() {
         setProducts(loadedProducts);
       })
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [refreshProductsFlag]);
+
+  const requestAddVacuumCleaner = () => {
+    setIsCreating(true);
+
+    fetch("http://localhost:3005/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify({
+        name: "Новый товар",
+        price: 4690,
+      }),
+    })
+      .then((rawResponse) => rawResponse.json())
+      .then((response) => {
+        console.log("Товар добавлен, ответ сервера:", response);
+        refreshProducts();
+      })
+      .finally(() => setIsCreating(false));
+  };
 
   return (
     <>
@@ -27,6 +50,9 @@ function App() {
           </div>
         ))
       )}
+      <button disabled={isCreating} onClick={requestAddVacuumCleaner}>
+        Добавить товар
+      </button>
     </>
   );
 }
