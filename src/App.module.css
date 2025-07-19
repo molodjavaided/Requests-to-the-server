@@ -18,6 +18,13 @@
   animation: loader 2s infinite;
 }
 
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
 @keyframes loader {
   0% {
     transform: rotate(0deg);

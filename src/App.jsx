@@ -1,44 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import {
+  useRequestAddVacuumCleaner,
+  useRequestDeleteHairDryer,
+  useRequestGetProducts,
+  useRequestUpdateSmartphone,
+} from "./hooks";
 import styles from "./App.module.css";
 
 function App() {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [refreshProductsFlag, setRefreshProductsFlag] = useState(false);
 
   const refreshProducts = () => setRefreshProductsFlag(!refreshProductsFlag);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    fetch("http://localhost:3005/products")
-      .then((loadedData) => loadedData.json())
-      .then((loadedProducts) => {
-        setProducts(loadedProducts);
-      })
-      .finally(() => setIsLoading(false));
-  }, [refreshProductsFlag]);
-
-  const requestAddVacuumCleaner = () => {
-    setIsCreating(true);
-
-    fetch("http://localhost:3005/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json;charset=utf-8" },
-      body: JSON.stringify({
-        name: "Новый товар",
-        price: 4690,
-      }),
-    })
-      .then((rawResponse) => rawResponse.json())
-      .then((response) => {
-        console.log("Товар добавлен, ответ сервера:", response);
-        refreshProducts();
-      })
-      .finally(() => setIsCreating(false));
-  };
-
+  const { isLoading, products } = useRequestGetProducts(refreshProductsFlag);
+  const { isCreating, requestAddVacuumCleaner } =
+    useRequestAddVacuumCleaner(refreshProducts);
+  const { isUpdating, requestUpdateSmartphone } =
+    useRequestUpdateSmartphone(refreshProducts);
+  const { isDeleting, requestDeleteHairDryer } =
+    useRequestDeleteHairDryer(refreshProducts);
   return (
     <>
       {isLoading ? (
@@ -50,9 +30,17 @@ function App() {
           </div>
         ))
       )}
-      <button disabled={isCreating} onClick={requestAddVacuumCleaner}>
-        Добавить товар
-      </button>
+      <div className={styles.buttons}>
+        <button disabled={isCreating} onClick={requestAddVacuumCleaner}>
+          Добавить товар
+        </button>
+        <button disabled={isUpdating} onClick={requestUpdateSmartphone}>
+          Обновить смартфон
+        </button>
+        <button disabled={isDeleting} onClick={requestDeleteHairDryer}>
+          Удалить фен
+        </button>
+      </div>
     </>
   );
 }
