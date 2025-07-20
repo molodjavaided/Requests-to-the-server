@@ -1,18 +1,20 @@
 import { useState } from "react";
+import { ref, remove } from 'firebase/database'
+import { db } from "../firebase";
 
-export const useRequestDeleteHairDryer = (refreshProducts) => {
+export const useRequestDeleteHairDryer = () => {
      const [isDeleting, setIsDeleting] = useState(false);
 
      const requestDeleteHairDryer = () => {
     setIsDeleting(true);
 
-    fetch("http://localhost:3005/products/003", {
-      method: "DELETE",
-    })
-      .then((rawResponse) => rawResponse.json())
+    const hairDryerDbRef = ref(db, 'products/003');
+
+    remove(hairDryerDbRef)
+
       .then((response) => {
         console.log("Фен удвлен, ответ сервера:", response);
-        refreshProducts();
+
       })
       .finally(() => setIsDeleting(false));
   };

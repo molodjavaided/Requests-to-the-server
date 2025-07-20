@@ -12,7 +12,7 @@ function App() {
 
   const refreshProducts = () => setRefreshProductsFlag(!refreshProductsFlag);
 
-  const { isLoading, products } = useRequestGetProducts(refreshProductsFlag);
+  const { isLoading, products } = useRequestGetProducts();
   const { isCreating, requestAddVacuumCleaner } =
     useRequestAddVacuumCleaner(refreshProducts);
   const { isUpdating, requestUpdateSmartphone } =
@@ -24,7 +24,7 @@ function App() {
       {isLoading ? (
         <div className={styles.loader}></div>
       ) : (
-        products.map(({ id, name, price }) => (
+        Object.entries(products).map(([id, { name, price }]) => (
           <div key={id}>
             {name} - {price} руб
           </div>
